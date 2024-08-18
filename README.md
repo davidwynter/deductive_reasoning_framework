@@ -134,6 +134,28 @@ deductive_reasoning_framework/
    - Select a dataset and configure the percentage ranges for each ML model.
    - Run Ray Tune to optimize the model contributions and maximize the matched triples during inference.
 
+5. **BaseURL Selection:**
+   - The base_url parameter represents the base URI (Uniform Resource Identifier) that is used to create fully qualified URIs for subjects, predicates, and objects in the RDF graph. For example, if you pass http://example.org as the base_url, a subject like "Barack_Obama" will be converted into the URI http://example.org/Barack_Obama.
+   - How is base_url Usually Chosen?
+
+    - Domain Name:
+        Use of an Organizational Domain: Typically, base_url is chosen based on the domain of the organization or project. For example, if the organization is "Example Corp" with the domain "example.com", the base URL might be http://example.com/data.
+        Ensures Uniqueness: Using a domain-controlled URL ensures that the URIs are globally unique and can be dereferenced if published on the web.
+
+    - Context-Specific URIs:
+        Project or Dataset-Specific: The base_url may include specific paths related to the project or dataset being managed. For example, http://example.com/dataset1 for a specific dataset.
+        Versioning: Sometimes, the base URL may include versioning information, e.g., http://example.com/v1/data.
+
+    - Default or Placeholder URIs:
+        Development and Testing: During development or testing, it's common to use placeholders like http://example.org or http://localhost.
+        Non-Public Data: If the data is not intended to be public, a generic URL like http://example.org might be used.
+
+    - Best Practices for Choosing base_url:
+
+      Stability: Ensure that the base_url is stable and doesn't change frequently, as URIs are meant to be persistent identifiers.
+      Consistency: Use a consistent pattern across datasets and projects within the same domain.
+      Descriptive: Where possible, include descriptive elements in the base_url to indicate the nature of the data or its source.
+
 ## Contributing
 
 Contributions are welcome! Please fork the repository and submit a pull request with your changes. Make sure to update the documentation and include tests for any new functionality.

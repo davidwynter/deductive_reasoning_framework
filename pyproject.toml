@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "deductive_reasoning_framework"
+version = "0.1.0"
+description = "A Deductive Reasoning Framework using various ML models and RDF."
+authors = ["David Wynter <daed@yambina.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+streamlit = "^1.37.1"
+rdflib = "^6.0.0"
+stanford-openie = "1.3.0"
+bcrypt = "^3.2.0"
+ray = {extras = ["tune"], version = "^2.0.0"}
+requests = "^2.26.0"
+pgmpy = "^0.1.25"
+pymc = "*"
+pyro-ppl  = "^1.9.1"
+owlready2 = "^0.46"
+python-dotenv = "*"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2.5"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

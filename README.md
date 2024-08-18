@@ -6,18 +6,27 @@ The Deductive Reasoning Framework is a Python-based application that leverages v
 
 ## Table of Contents
 
-- [Installation](#installation)
-- [Project Structure](#project-structure)
-- [Modules and Classes](#modules-and-classes)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
+- [Deductive Reasoning Framework](#deductive-reasoning-framework)
+  - [Overview](#overview)
+  - [Table of Contents](#table-of-contents)
+  - [Installation](#installation)
+    - [Prerequisites](#prerequisites)
+    - [Steps](#steps)
+  - [Project Structure](#project-structure)
+  - [Modules and Classes](#modules-and-classes)
+    - [`engine/` - Core Engine Components](#engine---core-engine-components)
+    - [`/` - Streamlit Page Components](#---streamlit-page-components)
+    - [`utils/` - Utility Functions](#utils---utility-functions)
+  - [Usage](#usage)
+  - [Contributing](#contributing)
+  - [License](#license)
+  - [VS Code launch.json entry](#vs-code-launchjson-entry)
 
 ## Installation
 
 ### Prerequisites
 
-- Python 3.8+
+- Python 3.11+
 - Poetry for dependency management
 - Optional: `python-dotenv` if environment variables are needed
 
@@ -25,7 +34,7 @@ The Deductive Reasoning Framework is a Python-based application that leverages v
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/yourusername/deductive_reasoning_framework.git
+   git clone https://github.com/davidwynter/deductive_reasoning_framework.git
    cd deductive_reasoning_framework
    ```
 
@@ -36,7 +45,7 @@ The Deductive Reasoning Framework is a Python-based application that leverages v
 
 3. **Run the Streamlit application:**
    ```bash
-   poetry run streamlit run src/app.py
+   poetry run streamlit run src/deductive_ai/app.py
    ```
 
 ## Project Structure
@@ -45,27 +54,26 @@ The Deductive Reasoning Framework is a Python-based application that leverages v
 deductive_reasoning_framework/
 │
 ├── src/
-│   ├── app.py                    # Main Streamlit application
-│   ├── __init__.py               # Package initializer
-│   ├── engine/                   # Core engine components
-│   │   ├── __init__.py           # Engine module initializer
-│   │   ├── deductive_engine.py   # DeductiveReasoningEngine class
-│   │   ├── hyperparameter_tuning.py # HyperParameterTuning class
-│   │   ├── text_to_rdf.py        # TextToRDFConverter class
-│   │   └── authentication.py     # Authentication and user management functions
-│   │
-│   ├── pages/                    # Streamlit page components
-│   │   ├── __init__.py           # Pages module initializer
-│   │   ├── login.py              # Login page
-│   │   ├── data_management.py    # Data & Rule Management page
-│   │   ├── inference_validation.py # Inference & Validation page
-│   │   └── hyperparameter_tuning_page.py # Hyper-Parameter Tuning page
-│   │
-│   ├── utils/                    # Utility functions
-│   │   ├── __init__.py           # Utils module initializer
-│   │   ├── file_utils.py         # Utility functions for file handling
-│   │   ├── rdf_utils.py          # Utility functions for RDF handling
-│   │   └── env_utils.py          # Utility functions for environment variables (if needed)
+|   ├── deductive_ai/
+|       ├── app.py                  # Main Streamlit application
+│       │── login.py                # Login page
+│       │── data_management.py      # Data & Rule Management page
+│       │── inference_validation.py # Inference & Validation page
+│       │── hyperparameter_tuning_page.py # Hyper-Parameter Tuning page
+│       ├── __init__.py               # Package initializer
+│       │
+│       ├── engine/                   # Core engine components
+│       │   ├── __init__.py           # Engine module initializer
+│       │   ├── deductive_engine.py   # DeductiveReasoningEngine class
+│       │   ├── hyperparameter_tuning.py # HyperParameterTuning class
+│       │   ├── text_to_rdf.py        # TextToRDFConverter class
+│       │   └── authentication.py     # Authentication and user management functions
+│       │
+│       ├── utils/                    # Utility functions
+│       │   ├── __init__.py           # Utils module initializer
+│       │   ├── file_utils.py         # Utility functions for file handling
+│       │   ├── rdf_utils.py          # Utility functions for RDF handling
+│       │   └── env_utils.py          # Utility functions for environment variables (if needed)
 │
 ├── .env                          # Environment variables (optional)
 ├── pyproject.toml                # Poetry configuration file
@@ -89,7 +97,7 @@ deductive_reasoning_framework/
 - **`authentication.py`**
   - Contains functions for user authentication and management. It handles password encryption, role-based access control, and allows "Admin" users to create new users.
 
-### `pages/` - Streamlit Page Components
+### `/` - Streamlit Page Components
 
 - **`login.py`**
   - Implements the login page, which includes password change functionality for users. It also provides the ability for "Admin" users to create new users.
@@ -167,3 +175,20 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 This `README.md` provides a comprehensive overview of your Deductive Reasoning Framework, including how each module and class contributes to the functionality of the project. It also includes installation instructions, usage guidelines, and information about the project structure.
+
+##  VS Code launch.json entry
+```
+        {
+            "name": "Python:Streamlit Deductive",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "streamlit",
+            "args": [
+                "run",
+                "${file}",
+                "--server.port",
+                "3003"
+            ]
+        }
+```
+Select app.py file in editor and run the "Python:Streamlit Deductive" debug entry

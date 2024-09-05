@@ -12,6 +12,19 @@
                 "--server.port",
                 "3003"
             ]
+        },
+        {
+            "name": "Run Streamlit App",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/deductive_reasoning_framework/app/deductive_ai/app.py",
+            "console": "integratedTerminal",
+            "args": [
+                "run"
+            ],
+            "env": {
+                "STREAMLIT_SERVER_PORT": "8501"
+            }
         }
     ]
 }

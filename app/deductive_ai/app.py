@@ -3,14 +3,14 @@ from streamlit.logger import get_logger
 
 
 LOGGER = get_logger(__name__)
+st.set_page_config(page_title="Deductive Reasoning Framework", layout="wide")
 
 
 def run():
-    st.set_page_config(page_title="Deductive Reasoning Framework", layout="wide")
 
     st.write("# Welcome to Streamlit! 👋")
     print("set_page_config executed")
-'''
+
     if 'authenticated' not in st.session_state:
         st.session_state.authenticated = False
 
@@ -34,6 +34,6 @@ def run():
         elif menu == "Logout":
             st.session_state.authenticated = False
             st.experimental_rerun()
-'''
+
 if __name__ == "__main__":
     run()

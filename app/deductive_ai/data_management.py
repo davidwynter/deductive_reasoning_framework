@@ -1,7 +1,7 @@
 import streamlit as st
-from deductive_ai.engine.deductive_engine import DeductiveReasoningEngine
-from deductive_ai.engine.text_to_rdf import TextToRDFConverter
-from deductive_ai.utils.file_utils import save_json, load_json, save_uploaded_file, list_files, delete_file
+from engine.deductive_engine import DeductiveReasoningEngine
+from engine.text_to_rdf import TextToRDFConverter
+from utils.file_utils import save_json, load_json, save_uploaded_file, list_files, delete_file
 from pathlib import Path
 
 # Data & Rule Management Page

@@ -1,0 +1,42 @@
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: intellichat
+    volumes:
+      - /data/postgres:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      intellichat:
+        aliases:
+          - postgres
+
+  weaviate:
+    command:
+    - --host
+    - 0.0.0.0
+    - --port
+    - '9092'
+    - --scheme
+    - http
+    image: semitechnologies/weaviate:1.20.3
+    volumes: 
+      - /data/weaviate:/var/lib/weaviate
+    ports:
+    - 9092:9092
+    restart: on-failure:0
+    environment:
+      QUERY_DEFAULTS_LIMIT: 25
+      AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: 'true'
+      PERSISTENCE_DATA_PATH: '/var/lib/weaviate'
+      DEFAULT_VECTORIZER_MODULE: text2vec-openai
+      ENABLE_MODULES: text2vec-openai
+      CLUSTER_HOSTNAME: 'node1'
+    networks:
+      intellichat:
+        aliases:
+          - weaviate

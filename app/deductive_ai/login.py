@@ -1,5 +1,5 @@
 import streamlit as st
-from deductive_ai.utils.authentication import authenticate, change_password, create_user
+from utils.authentication import authenticate, change_password, create_user
 
 def login_page():
     st.title("Login")

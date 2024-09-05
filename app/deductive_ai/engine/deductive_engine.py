@@ -1,4 +1,5 @@
 import random
+
 from pgmpy.models import BayesianNetwork
 from pgmpy.inference import VariableElimination
 from pgmpy.factors.discrete import TabularCPD
@@ -11,6 +12,7 @@ from pyro.infer.autoguide import AutoDiagonalNormal
 from pyro.infer import SVI, Trace_ELBO
 from owlready2 import *
 from rdflib import Graph, Namespace
+from engine.confidence_model import ConfidenceAdjuster
 
 
 class DeductiveReasoningEngine:
@@ -24,7 +26,7 @@ class DeductiveReasoningEngine:
         self.confidence_weights = confidence_weights if confidence_weights else {"bayesian": 1.0}
         self.onto = None
         self.inferred_graph = set()
-        self.pyro_model = self.define_pyro_model()  # Assuming you have a Pyro model defined
+        self.confidence_adjuster = ConfidenceAdjuster()
         # Initialize probabilistic models based on the confidence methods provided
         if "bayesian" in self.confidence_weights:
             self.bayesian_network = self.create_bayesian_network()
@@ -104,9 +106,9 @@ class DeductiveReasoningEngine:
                     if prop[subj] and obj in prop[subj]:
                         fact = (subj.iri, prop.iri, obj.iri)
                         confidence = self.estimate_confidence(fact)
-                        if hasattr(self, 'ml_model') and self.ml_model:
-                            ml_confidence = self.apply_ml_model(fact)
-                            confidence = self.combine_confidences(confidence, ml_confidence)
+                        if self.confidence_adjuster:
+                            ml_confidence = self.confidence_adjuster.apply_ml_model(fact)
+                            confidence = self.confidence_adjuster.combine_confidences(confidence, ml_confidence)
                         self.inferred_graph.add(fact)
                         self.confidence_scores[fact] = confidence
 
@@ -172,27 +174,6 @@ class DeductiveReasoningEngine:
 
         return rate
 
-    def apply_ml_model(self, fact):
-        """
-        Placeholder for applying the machine learning model.
-        """
-        return random.uniform(0.5, 1.0)
-
-    def combine_confidences(self, deductive_confidence, ml_confidence):
-        """
-        Combine confidence scores from deductive reasoning and the ML model.
-        """
-        if self.integration_method == "combine_confidence":
-            return (deductive_confidence + ml_confidence) / 2
-        elif self.integration_method == "weighted_combine":
-            return 0.7 * ml_confidence + 0.3 * deductive_confidence
-        elif self.integration_method == "ml_override":
-            return ml_confidence if ml_confidence else deductive_confidence
-        else:
-            return deductive_confidence
-
-    # Other methods (validate_inferences, iterate_rules, etc.) remain unchanged
-
 # Example usage of the generalized framework with weighted confidence estimation
 def example_usage(base_url = "http://example.org/"):
     # Define variables and relationships for a new domain, e.g., "Weather"
@@ -233,11 +214,22 @@ def example_usage(base_url = "http://example.org/"):
     ''')
     engine.apply_reasoning()
     
+    # Train and apply ML model for confidence adjustment
+    training_data = [
+        ((EX.Patient1, EX.hasSymptom, EX.Fever), 0.8),
+        ((EX.Patient2, EX.hasSymptom, EX.Cough), 0.7),
+        ((EX.Patient1, EX.mayHave, EX.Flu), 0.6),
+    ]
+    engine.train_ml_model(training_data, epochs=100)
+    
+    # Apply reasoning with ML model
+    engine.apply_reasoning()
+    
     # Validate and evaluate
     known_outcomes = {(EX.Patient1, EX.mayHave, EX.DiseaseX)}
     engine.validate_inferences(known_outcomes)
     accuracy, avg_confidence = engine.evaluate_performance()
-    print(f"Weighted Method - Accuracy: {accuracy * 100:.2f}%, Average Confidence: {avg_confidence:.2f}")
+    print(f"Weighted Method with ML - Accuracy: {accuracy * 100:.2f}%, Average Confidence: {avg_confidence:.2f}")
     
     # Retrieve the inferred graph
     inferred_graph = engine.get_inferred_graph()
@@ -245,7 +237,8 @@ def example_usage(base_url = "http://example.org/"):
         confidence = engine.confidence_scores.get(triple, 1.0)
         print(f"{triple} with confidence {confidence:.2f}")
 
-
+    # Save the trained ML model
+    engine.save_ml_model('confidence_adjuster.pth')
 
 if __name__ == "__main__":
     example_usage()

@@ -1,0 +1,11 @@
+numpy==2.1.0
+owlready2==0.46
+pgmpy==0.1.26
+pymc==5.16.2
+pyro-ppl==1.8.4
+pytest
+python-dotenv==1.0.1
+python_bcrypt==0.3.2
+ray==2.35.0
+rdflib==7.0.0
+streamlit==1.38.0

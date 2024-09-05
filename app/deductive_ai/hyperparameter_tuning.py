@@ -1,4 +1,4 @@
-from deductive_ai.engine.hyperparameter_tuning import HyperParameterTuning
+from engine.hyperparameter_tuning import HyperParameterTuning
 import streamlit as st
 
 # Hyper-Parameter Tuning Page

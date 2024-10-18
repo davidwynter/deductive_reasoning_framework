@@ -33,7 +33,7 @@ class HyperParameterTuning:
             "bayesian": tune.choice(ranges["Bayesian Networks"]),
             "pymc": tune.choice(ranges["Probabilistic Programming"]),
             "pyro": tune.choice(ranges["Monte Carlo Methods"]),
-            "pyreason": tune.choice(ranges["Markov Logic Networks"])
+            # "pyreason": tune.choice(ranges["Markov Logic Networks"])
         }
 
         def tune_wrapper(config):

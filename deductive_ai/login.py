@@ -18,7 +18,7 @@ def login_page():
             else:
                 st.session_state.first_login = False
             
-            st.experimental_rerun()
+            st.rerun()
         else:
             st.error("Invalid username or password")
 

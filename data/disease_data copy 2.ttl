@@ -1,0 +1,26 @@
+@prefix doid: <http://purl.obolibrary.org/obo/DOID_> .
+@prefix ex: <http://example.org/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+ex:Patient1 rdf:type ex:Patient ;
+    ex:hasSymptom ex:Symptom1, ex:Symptom2, ex:Symptom3 .
+
+ex:Patient2 rdf:type ex:Patient ;
+    ex:hasSymptom ex:Symptom3 .
+
+ex:Disease1 rdf:type doid:4 ;  # Example DOID for disease
+    ex:hasSymptom ex:Symptom1, ex:Symptom3 .
+
+ex:Flu rdf:type doid:8469 ;  # DOID for Influenza
+    ex:hasSymptom ex:Symptom1, ex:Symptom2, ex:Symptom3 .
+
+ex:Symptom1 rdf:type ex:Symptom ;
+    rdfs:label "Fever" .
+
+ex:Symptom2 rdf:type ex:Symptom ;
+    rdfs:label "Cough" .
+
+ex:Symptom3 rdf:type ex:Symptom ;
+    rdfs:label "Headache" .
+

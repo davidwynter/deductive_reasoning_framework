@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.optim as optim
 
 class ConfidenceAdjuster(nn.Module):
-    def __init__(self, input_size):
+    def __init__(self, input_size=3):
         super(ConfidenceAdjuster, self).__init__()
         self.fc1 = nn.Linear(input_size, 64)
         self.fc2 = nn.Linear(64, 32)

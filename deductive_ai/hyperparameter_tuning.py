@@ -21,7 +21,7 @@ def hyperparameter_tuning_page():
             "Bayesian Networks": bayesian_range,
             "Probabilistic Programming": pymc3_range,
             "Monte Carlo Methods": pyro_range,
-            "Markov Logic Networks": pyreason_range
+            # "Markov Logic Networks": pyreason_range
         }
         tuning = HyperParameterTuning(st.session_state.engine, dataset, st.session_state.engine.get_expected_triples(dataset))
         best_config, best_result = tuning.run_tuning(ranges)

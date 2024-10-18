@@ -6,6 +6,7 @@ authors = ["David Wynter <daed@yambina.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.11"
+numpy = "^1.0.0"
 streamlit = "^1.37.1"
 rdflib = "^6.0.0"
 stanford-openie = "1.3.0"
@@ -13,7 +14,7 @@ bcrypt = "^3.2.0"
 ray = {extras = ["tune"], version = "^2.0.0"}
 requests = "^2.26.0"
 pgmpy = "^0.1.25"
-pymc = "*"
+pymc = "5.16.2"
 pyro-ppl  = "^1.9.1"
 owlready2 = "^0.46"
 python-dotenv = "*"

@@ -38,7 +38,7 @@ class TextToRDFConverter:
         g = Graph()
 
         # Extract triples from the text
-        triples = self.extract_triples(text)
+        triples = self.extract_subject_predicate_object(text)
 
         # Convert triples to RDF
         for subj, pred, obj in triples:

@@ -62,7 +62,7 @@ def labelled_dataset():
     sentences = [
         "Michelle Obama wears a red dress designed by Karl Lagerfeld",
         "Lionel Messi scores a hat-trick in the Champions League",
-        "The stock market crashed due to economic instability",
+        "The stock market crashed due to Trump insanity",
         "The new fashion line by Dior is stunning"
     ]
     labels = ["fashion", "sports", "economics", "fashion"]

@@ -12,15 +12,16 @@ from rdflib import Namespace, Graph
 from pgmpy.models import BayesianNetwork
 from pgmpy.inference import VariableElimination
 from pgmpy.factors.discrete import TabularCPD
+from sklearn import tree
 import pymc as pm
 import pyro 
 import pyro.distributions as dist
-import pyro.infer
 import pyro.optim
 from pyro.infer.autoguide import AutoDiagonalNormal
 from pyro.infer import SVI, Trace_ELBO
 from owlready2 import Ontology, Imp, get_ontology, sync_reasoner, ObjectProperty, Thing, Restriction, entity
 from deductive_ai.engine.confidence_model import ConfidenceAdjuster
+from deductive_ai.core.text_to_rdf import TextToRDFConverter
 
 
 class DeductiveReasoningEngine:
@@ -35,6 +36,7 @@ class DeductiveReasoningEngine:
         self.confidence_weights = confidence_weights if confidence_weights else {"bayesian": 1.0}
         self.onto: Optional[Ontology] = None
         self.inferred_graph: Set[Tuple] = set()
+        self.nl_convertor = None
         
         # Initialize ConfidenceAdjuster only if ml_model is provided
         self.confidence_adjuster = ConfidenceAdjuster(ml_model) if ml_model else None
@@ -43,6 +45,19 @@ class DeductiveReasoningEngine:
         self.bayesian_network = None
         self.pymc3_model = None
         self.pyro_model = None
+
+        self.graph = Graph()
+        
+    def populate_from_texts(self, text_sources: List[str]):
+        """Populates KG from unstructured texts"""
+        converter = TextToRDFConverter(self.onto)
+        new_triples = converter.populate_kg(text_sources)
+        self.graph += new_triples
+        
+        # Validate against ontology
+        validation_errors = self._validate_new_triples(new_triples)
+        if validation_errors:
+            raise ValueError(f"Ontology violations: {validation_errors}")
 
     def create_pyro_model(self, variables: List[str], relationships: List[Tuple[str, str]]):
         """
@@ -307,6 +322,31 @@ class DeductiveReasoningEngine:
         Retrieve the inferred graph.
         """
         return self.inferred_graph
+        
+    def get_datasets(self) -> List[str]:
+        """
+        Get a list of available datasets.
+        This is a placeholder method that returns a list of example datasets.
+        In a real implementation, this would scan a directory or database for available datasets.
+        """
+        # Create data_management directory if it doesn't exist
+        data_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data_management")
+        os.makedirs(data_dir, exist_ok=True)
+        
+        # Return a list of example datasets
+        return ["example_dataset", "disease_dataset", "symptom_dataset"]
+        
+    def get_expected_triples(self, dataset: str) -> List[Tuple]:
+        """
+        Get the expected triples for a dataset.
+        This is a placeholder method that returns a list of example triples.
+        In a real implementation, this would load the expected triples from a file or database.
+        """
+        # Return a list of example triples
+        return [
+            ("http://example.org/Patient1", "http://example.org/hasSymptom", "http://example.org/Fever"),
+            ("http://example.org/Patient1", "http://example.org/mayHave", "http://example.org/Flu")
+        ]
 
     def train_ml_model(self, training_data: List[Tuple[Tuple, float]], epochs: int = 100):
         """
@@ -331,6 +371,57 @@ class DeductiveReasoningEngine:
         if not self.confidence_adjuster:
             raise ValueError("ConfidenceAdjuster not initialized. Provide an ML model in the constructor.")
         self.confidence_adjuster.load_model(path)
+        
+    def set_confidence_weights(self, weights):
+        """
+        Set the confidence weights for different reasoning methods.
+        
+        Args:
+            weights: Dictionary mapping method names to their weights (percentages)
+        """
+        # Convert the weights to a normalized form (sum to 1.0)
+        total = sum(weights.values())
+        normalized_weights = {k: v / total for k, v in weights.items()}
+        
+        # Update the confidence weights
+        self.confidence_weights = normalized_weights
+        
+        print(f"Confidence weights updated: {self.confidence_weights}")
+        
+    def initialize_nl_converter(self, ontology_path):
+        from nl_to_swrl import NLToSWRLConverter
+        self.nl_converter = NLToSWRLConverter(ontology_path)
+        
+    def convert_nl_to_swrl(self, nl_rule: str) -> str:
+        if not self.nl_converter:
+            raise ValueError("NL converter not initialized with ontology")
+        return self.nl_converter.convert(nl_rule)
+    
+    def validate_swrl_rule(self, rule_text: str) -> dict:
+        validation_result = {
+            "valid": False,
+            "message": "",
+            "suggestions": []
+        }
+        
+        try:
+            # Parse rule components
+            parsed = self._parse_swrl_components(rule_text)
+            
+            # Validate ontology elements
+            for cls in parsed["classes"]:
+                if not self.ontology.validate_class(cls):
+                    validation_result["suggestions"].append(
+                        f"Did you mean: {self.ontology.suggest_similar_class(cls)}?"
+                    )
+            
+            # Add more validation checks
+            validation_result["valid"] = True
+            return validation_result
+            
+        except Exception as e:
+            validation_result["message"] = str(e)
+            return validation_result
 
 # Example usage of the generalized framework with weighted confidence estimation
 def example_usage(base_url: str = "http://example.org/"):

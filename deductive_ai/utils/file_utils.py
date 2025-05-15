@@ -1,9 +1,17 @@
 import json
+import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), '.env'))
+
+# Get storage path from environment variable, or use default paths
+STORAGE_PATH = os.environ.get("INFERIQ_STORAGE", os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Base directory for storing JSON files
-JSON_DIR = Path("data_management")
-UPLOAD_DIR = Path("uploaded_files")
+JSON_DIR = Path(os.path.join(STORAGE_PATH, "data_management"))
+UPLOAD_DIR = Path(os.path.join(STORAGE_PATH, "uploaded_files"))
 
 def setup_directories():
     """

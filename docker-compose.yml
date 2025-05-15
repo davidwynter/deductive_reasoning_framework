@@ -10,10 +10,6 @@ services:
       - /data/postgres:/var/lib/postgresql/data
     ports:
       - "5432:5432"
-    networks:
-      intellichat:
-        aliases:
-          - postgres
 
   weaviate:
     command:
@@ -36,7 +32,4 @@ services:
       DEFAULT_VECTORIZER_MODULE: text2vec-openai
       ENABLE_MODULES: text2vec-openai
       CLUSTER_HOSTNAME: 'node1'
-    networks:
-      intellichat:
-        aliases:
-          - weaviate
+

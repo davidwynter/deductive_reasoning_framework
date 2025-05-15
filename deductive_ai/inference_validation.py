@@ -1,9 +1,12 @@
 import streamlit as st
 import pandas as pd
 import os
+from engine.validation_engine import ValidationEngine
 from engine.deductive_engine import DeductiveReasoningEngine
 from utils.file_utils import save_json, load_json
-from confidence_model import ConfidenceAdjuster
+from engine.nl_to_swrl import NLToSWRLConverter
+from core.text_to_rdf import TextToRDFConvertor  # Your enhanced class
+from core.ontology_manager import OntologyManager
 
 def load_model_dataset_associations():
     """Load the existing model-dataset associations"""
@@ -16,12 +19,69 @@ def save_model_dataset_association(dataset, model_path):
     save_json(associations, "model_dataset_associations")
 
 # Inference & Validation Page
-def inference_validation_page():
+def inference_validation_page(ontology_path=None):
     st.title("Inference & Validation")
     
+    # Initialize session state components
+    if 'text_converter' not in st.session_state:
+        st.session_state.om = OntologyManager("path/to/ontology.owl")
+        st.session_state.text_converter = TextToRDFConvertor(st.session_state.om)
+    
+    # Create tabs for different functionalities
+    tab1, tab2 = st.tabs(["Rule Validation", "Text to RDF"])
+    
+    with tab1:
+        _show_rule_validation_ui()  # Your existing rule validation UI
+    
+    with tab2:
+        _show_text_to_rdf_ui()  # New text conversion UI
+
+def _show_text_to_rdf_ui():
+    """Dedicated tab for text-to-RDF conversion"""
+    st.subheader("Unstructured Text to RDF")
+    
+    text_input = st.text_area(
+        "Paste text (clinical notes, product descriptions, etc.)",
+        height=200,
+        placeholder="Patient X presented with fever and headache..."
+    )
+    
+    if st.button("Convert to RDF"):
+        with st.spinner("Extracting triples..."):
+            try:
+                # Convert and display results
+                kg = st.session_state.text_converter.populate_kg([text_input])
+                triples = list(kg)
+                
+                st.success(f"Extracted {len(triples)} triples")
+                
+                # Visualize as a table
+                st.dataframe(
+                    pd.DataFrame(triples, columns=["Subject", "Predicate", "Object"]),
+                    height=min(300, len(triples) * 35)
+                )
+                
+                # Option to save to knowledge graph
+                if st.button("Save to Knowledge Graph"):
+                    st.session_state.engine.graph += kg
+                    st.toast("Triples added to KG!")
+                    
+            except Exception as e:
+                st.error(f"Conversion failed: {str(e)}")
+
+def _show_rule_validation_ui():
+    if 'converter' not in st.session_state:
+        st.session_state.converter = NLToSWRLConverter(ontology_path=ontology_path)
+        st.session_state.validator = ValidationEngine(st.session_state.converter)
+
     # Ensure the engine is initialized
     if 'engine' not in st.session_state:
         st.session_state.engine = DeductiveReasoningEngine()
+        
+    # Initialize ConfidenceAdjuster if not already done
+    if not hasattr(st.session_state.engine, 'confidence_adjuster') or st.session_state.engine.confidence_adjuster is None:
+        from confidence_model import ConfidenceAdjuster
+        st.session_state.engine.confidence_adjuster = ConfidenceAdjuster()
 
     # Dataset selection
     st.subheader("Select Dataset for Inference")
@@ -85,6 +145,7 @@ def inference_validation_page():
 
     # ConfidenceAdjuster ML model section
     st.subheader("ConfidenceAdjuster ML Model")
+    st.info("This section allows you to train and use a machine learning model to adjust confidence scores.")
 
     # 1. Import training data
     st.write("Import Training Data")
@@ -116,16 +177,32 @@ def inference_validation_page():
     # 5. Train or load the model
     if st.button("Train New Model"):
         if training_data_file is not None:
-            # Convert training_data to the format expected by train_ml_model
-            # This depends on your specific data format and might need adjustment
-            formatted_training_data = [
-                ((row['subject'], row['predicate'], row['object']), row['confidence'])
-                for _, row in training_data.iterrows()
-            ]
-            st.session_state.engine.train_ml_model(formatted_training_data, epochs=100, learning_rate=0.001)
-            st.session_state.engine.save_ml_model(model_save_path)
-            save_model_dataset_association(selected_dataset, model_save_path)
-            st.success(f"Model trained and saved to {model_save_path}")
+            try:
+                # Convert training_data to the format expected by train_ml_model
+                # This depends on your specific data format and might need adjustment
+                formatted_training_data = []
+                
+                # Check if the required columns exist
+                required_columns = ['subject', 'predicate', 'object', 'confidence']
+                missing_columns = [col for col in required_columns if col not in training_data.columns]
+                
+                if missing_columns:
+                    st.error(f"Training data is missing required columns: {', '.join(missing_columns)}")
+                else:
+                    # Format the data
+                    formatted_training_data = [
+                        ((row['subject'], row['predicate'], row['object']), row['confidence'])
+                        for _, row in training_data.iterrows()
+                    ]
+                    
+                    # Train the model
+                    with st.spinner("Training model..."):
+                        st.session_state.engine.train_ml_model(formatted_training_data, epochs=100, learning_rate=0.001)
+                        st.session_state.engine.save_ml_model(model_save_path)
+                        save_model_dataset_association(selected_dataset, model_save_path)
+                        st.success(f"Model trained and saved to {model_save_path}")
+            except Exception as e:
+                st.error(f"Error training model: {str(e)}")
         else:
             st.error("Please upload training data before training the model.")
 

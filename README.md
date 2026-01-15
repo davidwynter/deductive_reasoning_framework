@@ -10,7 +10,7 @@ InferIQ is a powerful application that combines deductive reasoning, Bayesian ne
 - **Inference & Validation**: Run inference on your data using multiple reasoning methods
 - **Hyper-Parameter Tuning**: Optimize the weights of different reasoning methods
 - **User Management**: Manage users with different roles and permissions
-= **NLI**: Supports natural language to SWRL conversion
+- **NLI**: Supports natural language to SWRL conversion
 
 ## Natural Language Interface Features
 

@@ -161,3 +161,10 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 poetry.lock
+
+# OS junk
+*:Zone.Identifier
+Thumbs.db
+Desktop.ini
+desktop.ini
+.DS_Store

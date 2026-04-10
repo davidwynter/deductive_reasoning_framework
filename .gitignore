@@ -168,3 +168,10 @@ Thumbs.db
 Desktop.ini
 desktop.ini
 .DS_Store
+
+# OS junk
+*:Zone.Identifier
+Thumbs.db
+Desktop.ini
+desktop.ini
+.DS_Store
